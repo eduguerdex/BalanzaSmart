@@ -11,12 +11,13 @@ import time
 from datetime import datetime
 import random
 
+
 cap = None
 INTERVALO_REFRESCO_RELOJ = 300  # En milisegundos
 
 ws = Tk()
 ws.title("Balanza Smart")
-ws.geometry('900x510+200+100')
+ws.geometry('900x510')
 
 
 new = 1
@@ -36,12 +37,12 @@ def refrescar_peso():
     peso_actual.set(obtener_peso_actual())
     ws.after(INTERVALO_REFRESCO_RELOJ, refrescar_peso)
 
-#def openbrowser():
-    #webbrowser.open(url,new=new)
+def openbrowser():
+    webbrowser.open(url,new=new)
 
 def iniciar():
     global cap
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     visualizar()
 
 def visualizar():
@@ -126,7 +127,7 @@ btn2_canvas2 = canvas.create_window(
 lblVideo = Label(
 	ws,
     width=280,
-    height=300,
+	height=300,
 	)
 lblVideo_canvas3 = canvas.create_window(
 	25, 
@@ -144,10 +145,11 @@ lbl_p = Label(	ws,    textvariable=peso_actual,    width=30,	height=3)
 lblp_canvas = canvas.create_window(	380, 	340,	anchor = "nw",	window = lbl_p	)
 
 lbl_pc1 = Button(	ws,    text=f'Producto 1',    width=30,	height=3)
-lblpc1_canvas = canvas.create_window(	350, 	150,	anchor = "nw",	window = lbl_pc1	)
+lblpc1_canvas = canvas.create_window(	375, 	150,	anchor = "nw",	window = lbl_pc1	)
+
 
 lbl_pc3 = Button(	ws,    text=f'Producto 2',    width=30,	height=3)
-lblpc3_canvas = canvas.create_window(	350, 	225,	anchor = "nw",	window = lbl_pc3	)
+lblpc3_canvas = canvas.create_window(	375, 	225,	anchor = "nw",	window = lbl_pc3	)
 
 btns= Button(
 	ws, 
@@ -170,7 +172,7 @@ lbl_fh = Label(	ws,    textvariable=variable_hora_actual,    width=25,	height=2	
 lblfh_canvas = canvas.create_window(	665, 	30,	anchor = "nw",	window = lbl_fh	)
 refrescar_reloj()
 
-lbl_l = Label(	ws,    text=f'Lista de elementos',    width=25,	height=15	)
+lbl_l = Label(	ws,    text=f'Lista de elementos',    width=25,	height=20	)
 lbll_canvas = canvas.create_window(	660, 	100,	anchor = "nw",	window = lbl_l	)
 
 
