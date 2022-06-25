@@ -17,7 +17,8 @@ import cv2
 import numpy as np
 import tensorflow as tf
 import array as arr
-
+import qrcode
+from pyzbar.pyzbar import decode
 #import pandas as pd
 #from pandas import ExcelWriter
 
@@ -46,25 +47,26 @@ def cleanAndExit():
     print("Bye!")
     sys.exit()
 def agregar_datos():
-	global correo1, producto1, peso1
-	correo1.append(ingresa_correo.get())
+	global DNI1, producto1, peso1
+	DNI1.append(ingresa_DNI.get())
 	#producto1.append(ingresa_producto.get())
 	#peso1.append(ingresa_peso.get())
-	ingresa_correo.delete(0,END)
+	ingresa_DNI.delete(0,END)
 	#ingresa_producto.delete(0,END)
 	#ingresa_peso.delete(0,END)
 def excel():
-    global correo1, producto1, peso1, balanza
-    datos = {'Correo':correo1} 
-    #df = pd.DataFrame(datos,columns =['Correo'])
+    global DNI1, producto1, peso1, balanza
+    datos = {'DNI':DNI1} 
+    #df = pd.DataFrame(datos,columns =['DNI'])
     #escritor=pd.ExcelWriter('C:/Users/Aprender Creando/Documents/BalanzaConection/Data_Balanza.xlsx',engine='xlsxwriter')
     #df.to_excel(escritor,sheet_name="Usuarios",index=False)
     #escritor.save()
-    lbl_u.insert(0,correo1.pop())
+    lbl_u.insert(0,DNI1.pop())
     print("Data agregada")
 def funcion():
     ws.state(newstate  = "normal")
     root.state(newstate  = "withdraw")
+    iniciar()
 def funcion2():
     global muestra, nivel
     ws.state(newstate  = "withdraw")
@@ -86,6 +88,7 @@ def funcion2():
     frame3.place_forget()
     delete()
     listbox.insert(END, "{:<15s}  {:<10s} {:>15s}".format("Producto","Peso (Kg)","Costo (S/.)") )
+    finalizar()
 def agregarimage():
     global logo, ingresar, balanza, fond, grad,bg,home,settings,lista, iconhome,iconlogo, configuracion, iconlista, peso
 
@@ -157,7 +160,7 @@ def refrescar_reloj():
     ws.after(INTERVALO_REFRESCO_RELOJ, refrescar_reloj)
 def iniciar():
     global cap
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     visualizar()
 def visualizar():
     global cap
@@ -230,12 +233,16 @@ def fill():
         home_b.config(image=iconhome,font=(0,21))
         set_b.config(image=settings,font=(0,21))
         lista_b.config(image=iconlista,font=(0,21))
-def borarOmostrar():
+def borrarOmostrar():
     if frame2.grid_info() != {}:
         frame2.grid_remove()
+        pagar.place_forget()
+        eliminar.place_forget()
     else:
         frame2.grid(padx=1,column = 0, row = 0,sticky=E,columnspan=3)
-        frame.after(5000, borarOmostrar)
+        pagar.place(x=(width*9/12)+20, y=495.0)
+        eliminar.place(x=(width*10/12)+65, y=495.0)
+        frame.after(5000, borrarOmostrar)
 def retrievedata():
     ''' get data stored '''
     global list_data
@@ -261,8 +268,7 @@ def add_item():
         list_data.append(producto1.get())
         producto1.set("")
         flag=0
-    frame2.grid(padx=1,column = 0, row = 0,sticky=E,columnspan=3)
-    frame.after(2000, borarOmostrar)      
+    borrarOmostrar()     
 def add_item2():
     global list_data,flag,fixedlen
     if producto2 != "" and flag==1:
@@ -272,18 +278,97 @@ def add_item2():
         list_data.append(producto2.get())
         producto2.set("")
         flag=0
-    frame2.grid(padx=10,column = 0, row = 0,sticky=E,columnspan=3)
-    frame.after(2000, borarOmostrar)
+    borrarOmostrar()
 def vision():
-    global alimentos,detectado, producto1, producto2, val
+    global alimentos,deteccion, producto1, producto2, val
     frame3.place(	x=(width*5/24)+70, y=height*12/15,	anchor = "center")
-    producto1 = StringVar(value=alimentos[val])
-    producto2 = StringVar(value=alimentos[val-1])
+    producto1 = StringVar(value=alimentos[deteccion])
+    producto2 = StringVar(value=alimentos[deteccion-1])
     lbl_pc1.config(text = producto1.get())
     lbl_pc3.config(text = producto2.get())
     lbl_pc1.grid(row=0,column=0)
     lbl_pc3.grid(row=1,column=0)
- 
+def detectar():
+    global cap,model,deteccion
+    ret, frame = cap.read()
+    #cv2.imshow('frame', frame)
+    image = cv2.resize(frame, (255, 255))
+    X = tf.keras.utils.img_to_array(image)
+    X = np.expand_dims(X, axis=0)
+    X = X/255
+    Class = model.predict(X)
+    if Class[0,0] >= 0.5:
+        deteccion=0
+        print('apple')
+    elif Class[0,1] >= 0.5:
+        deteccion=1
+        print('banana')
+    elif Class[0,2] >= 0.5:
+        deteccion=2
+        print('beetroot')
+    elif Class[0,3] >= 0.5:
+        deteccion=3
+        print('carrot')
+    elif Class[0,4] >= 0.5:
+        deteccion=4
+        print('corn')
+    elif Class[0,5] >= 0.5:
+        deteccion=5
+        print('lemon')
+    elif Class[0,6] >= 0.5:
+        deteccion=6
+        print('onion')
+    elif Class[0,7] >= 0.5:
+        deteccion=7
+        print('potato')
+    elif Class[0,8] >= 0.5:
+        deteccion=8
+        print('sweetpotato')
+    elif Class[0,9] >= 0.5:
+        deteccion=9
+        print('tomato')
+    #if cv2.waitKey(1) == ord('q'):
+    vision()
+def delete_selected():
+    try:
+        selected = listbox.get(listbox.curselection())
+        listbox.delete(listbox.curselection())
+        list_data.pop(list_data.index(selected))
+        # reload_data()
+        # # listbox.selection_clear(0, END)
+        listbox.selection_set(0)
+        listbox.activate(0)
+        listbox.event_generate("&lt;&lt;ListboxSelect>>")
+        print(listbox.curselection())
+    except:
+        pass
+def qrfun():
+    global iconlqr
+    qr = qrcode.QRCode(
+        version= 1,
+        box_size=10,
+        border = 2
+    )
+    datos = ('https://www.kushki.com/products/')
+    qr.add_data(datos)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color='black',back_color='#2989cc')
+    img.save('C:/Users/Aprender Creando/Documents/qrcode.png')
+    absolute_folder_pathqr = os.path.dirname(os.path.realpath(__file__))
+    absolute_image_pathqr = os.path.join(absolute_folder_path, 'qrcode.png')
+    logo = tk.PhotoImage(file = absolute_image_pathqr)
+    iconqr = Image.open(absolute_image_pathqr).resize((70,70),Image.ANTIALIAS)
+    iconlqr= ImageTk.PhotoImage(iconqr)
+    iconlqr=Label(frameqr,image=iconlqr,bg='white',relief='flat')
+    iconlqr.grid(row=0,column=0,pady=50)
+def borrarOmostrarqr():
+    if frameqr.grid_info() != {}:
+        frameqr.grid_remove()
+    else:
+        frameqr.grid(padx=1,column = 0, row = 0,sticky=E,columnspan=3)
+        qrfun()
+        frameqr.after(5000, borrarOmostrarqr)
+
 #Variables usadas
 cap = None
 fixedlen = 10
@@ -291,23 +376,25 @@ list_data=[]
 INTERVALO_REFRESCO_RELOJ = 300  # En milisegundos
 width=1020
 height=720
+deteccion=0
 producto1,producto2=[],[]
-correo1,producto,peso1 = [],[],[]
+DNI1,producto,peso1 = [],[],[]
 nivel = 0
-min_w = 70 # Minimum width of the frame
-max_w = 220 # Maximum width of the frame
-cur_width = min_w # Increasing width of the frame
-expanded = False # Check if it is completely exanded
+min_w = 70
+max_w = 220
+cur_width = min_w 
+expanded = False 
 move=150
 hora=0
 val=0
 muestra=0
 flag=0
+model = tf.keras.models.load_model("C:/Users/Aprender Creando/Documents/modeloproduct.h5")
 alimentos=["manzana","platano","beterraga","zanahoria","maiz","limon","cebolla","papa","camote ","tomate "]
 #Primera Ventana
 root = Tk()
 root.title("Registro")
-root.geometry('1020x720+0+0')
+root.geometry('1020x720+10+20')
 root.resizable(0, 0)
 root.config(bg='black')
 root.state(newstate  = "normal")
@@ -322,7 +409,7 @@ canvas = tk.Canvas(
 canvas.place(x=0, y=0)
 canvas.create_rectangle(560, 0, 1020, 720, fill="#FCFCFC", outline="")
 canvas.create_text(
-    590.0, 266.0, text="Correo electrónico", fill="black",
+    590.0, 266.0, text="DNI: ", fill="black",
     font=("Arial-BoldMT", int(13.0)), anchor="w")
 canvas.create_text(
     659, 210.0, text="Bienvenid@",
@@ -332,9 +419,9 @@ title = tk.Label(
     fg="white", font=("Arial-BoldMT", int(30.0)))
 title.place(x=27.0, y=110.0)
 
-ingresa_correo = tk.Entry(bd=0, bg="black", highlightthickness=0, fg='white')
-ingresa_correo.place(x=590.0, y=280, width=321.0, height=35)
-usuario_actual = StringVar(value=ingresa_correo)
+ingresa_DNI = tk.Entry(bd=0, bg="black", highlightthickness=0, fg='white')
+ingresa_DNI.place(x=590.0, y=280, width=321.0, height=35)
+usuario_actual = StringVar(value=ingresa_DNI)
 
 path_picker_button = tk.Button(
     image=ingresar,
@@ -352,7 +439,7 @@ path_picker_button.place(
 info_text = tk.Label(
     text="Esta es la nueva balanza inteligente\n"
     "\n"
-    "Coloca tu correo y pulsa INGRESAR \n\n"
+    "Coloca tu DNI y pulsa INGRESAR \n\n"
     "Encima de la bandeja situa el producto\n"
     "que deseas pesar.\n\n"
     "Selecciona el producto que has pesado\n\n"
@@ -369,20 +456,20 @@ lbl_logo.place(x=805.0, y=0.0)
 ws = Toplevel()
 ws.state(newstate  = "withdraw")
 ws.title("Balanza Smart")
-ws.geometry('1020x720+0+0')
+ws.geometry('1020x720+10+20')
 ws.config(bg='black')
-#ws.call('wm', 'iconphoto', root._w, logo)
+ws.overrideredirect(True)
 canvas = Canvas(ws, height=720, width=1020,
     bd=0, highlightthickness=0, relief="ridge")
 canvas.create_image(width/2, height/2,image=grad,anchor = "center")
 ws.resizable(width=False, height=False)
 canvas.grid(row=0,column=0) 
 canvas.create_text((width/2)+70, height/15, text = 'Balanza Smart', fill='white',font=('Georgia', 40,"bold"))
-
+ 
 canvas.create_oval(390+move,265,575+move,430, fill="", outline ='',width=5)
 canvas.create_oval(392+move,270,578+move,450, fill= '', outline='white', width= 6)
 
-btn = Button(ws,image=peso,command=lambda:[progressBar(),vision()] ,bg='#2989cc',relief='flat')
+btn = Button(ws,image=peso,command=lambda:[progressBar(),detectar()] ,bg='#2989cc',relief='flat')
 btn_canvas = canvas.create_window((width*15/24), height*12/15,anchor = "center",window = btn)
 lblVideo = Label(ws,width=320,height=350)
 lblVideo_canvas3 = canvas.create_window((width*2/24)+50, height*3/15,anchor = "nw",window = lblVideo)
@@ -397,20 +484,18 @@ lblfh_canvas = canvas.create_window((width*21/24)-30, height*2/15,	anchor = "cen
 lbl_fd = Label(	ws, width=9,	height=0, font =('Georgia', 21,"bold"), bg='black', fg='#2989cc')
 lblfd_canvas = canvas.create_window((width*21/24)-30, height*2/15+30,	anchor = "center",	window = lbl_fd	)
 refrescar_reloj()
-iniciar()
 
 #Menu desplegable lateral
 ws.update() # For the width to get updated
-
 frame = Frame(ws, bg='black', width=70, height=ws.winfo_height())
 frame.grid(column = 0, row = 0,sticky=W)
-# Make the buttons with the icons to be shown 
+# Iconos
 logo_b=Label(frame,image=iconlogo,bg='white',relief='flat')
 home_b = Button(frame,image=iconhome,command=funcion2,bg='black',relief='flat')
 set_b = Button(frame,image=settings,bg='black',relief='flat')
-lista_b = Button(frame,image=iconlista,command=borarOmostrar,bg='black',relief='flat')
+lista_b = Button(frame,image=iconlista,command=borrarOmostrar,bg='black',relief='flat')
 
-# Put them on the frame
+# Colocar elementos
 logo_b.grid(row=0,column=0,pady=50)
 set_b.grid(row=1,column=0,pady=20)
 lista_b.grid(row=2,column=0,pady=20)
@@ -426,20 +511,24 @@ frame.grid_propagate(False)
 frame2 = Frame(ws, bg='white', width=250, height=350)
 frame2.grid_propagate(False)
 
+frameqr = Frame(ws, bg='white', width=250, height=350)
+frameqr.grid_propagate(False)
+
 listbox = Listbox(frame2,height=400, width=250,font=('Georgia', 10))
-listbox.grid(row=2,column=1,pady=0)
+listbox.grid(row=1,column=1,pady=0)
 listbox.insert(END, "{:<15s}  {:<10s} {:>15s}".format("Producto","Peso (Kg)","Costo (S/.)") )
+eliminar = Button(	ws,   text="Eliminar\nseleccionado",    width=10,	height=2,command=delete_selected,font=('Georgia', 9,"bold"))
+pagar = Button(	ws,    text="Pagar\nproductos",    width=10,	height=2,command=borrarOmostrarqr,font=('Georgia', 9,"bold"))
 
 #barra=Scrollbar(ws, command=listbox.yview)
 #barra.grid(row=2,column=1,pady=0)
 #listbox.config(yscrollcommand=barra)
 
 frame3 = Frame(ws, bg='#2989cc', width=150, height=100)
-#frame3.grid_propagate(False)
 lbl_pc1 = Button(	frame3,   textvariable=producto1,    width=10,	height=1,command=add_item,font=('Georgia', 15,"bold"))
 lbl_pc3 = Button(	frame3,    textvariable=producto2,    width=10,	height=0,command=add_item2,font=('Georgia', 13,"bold"))
-
 ws.mainloop()
 root.mainloop()
+
 if (SystemExit):
     cleanAndExit()
