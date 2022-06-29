@@ -71,14 +71,8 @@ def agregar_datos():
 	#ingresa_peso.delete(0,END)
 def excel():
     global DOC1, producto1, peso1, balanza, db
-    #df = pd.DataFrame(datos,columns =['DOC'])
-    #escritor=pd.ExcelWriter('C:/Users/Aprender Creando/Documents/BalanzaConection/Data_Balanza.xlsx',engine='xlsxwriter')
-    #df.to_excel(escritor,sheet_name="Usuarios",index=False)
-    #escritor.save()
     UDNI=DOC1.pop()
     lbl_u.insert(0,UDNI)
-    #datos = {'DNI':UDNI}
-    #db.child("Cliente").set(datos)
     print("Data agregada")
 def funcion():
     ws.state(newstate  = "normal")
@@ -291,10 +285,8 @@ def fireadd():
     UDNI=DOC1.pop()
     datosDNI = {'DNI':UDNI}
     letras = {'Productos':list_data}
-    db.child("Cliente").set(datosDNI)
-    db.child("Cliente").set(letras)
+    db.child(UDNI).set(letras)
     print("Data agregada")
-
 def add_item2():
     global list_data,flag,fixedlen
     if producto2 != "" and flag==1:
@@ -303,18 +295,19 @@ def add_item2():
         list_data.append(producto2.get())
         producto2.set("")
         flag=0
-    borrarOmostrar()
+        borrarOmostrar()
 def vision():
     global alimentos,deteccion, producto1, producto2, val
     frame3.place(	x=(width*5/24)+70, y=height*12/15,	anchor = "center")
+    deteccion=random.randrange(9)
     producto1 = StringVar(value=alimentos[deteccion])
     producto2 = StringVar(value=alimentos[deteccion-1])
     lbl_pc1.config(text = producto1.get())
     lbl_pc3.config(text = producto2.get())
     lbl_pc1.grid(row=0,column=0)
     lbl_pc3.grid(row=1,column=0)
-""" def detectar():
-    global cap,model,deteccion
+def detectar():
+    """ global cap,model,deteccion
     ret, frame = cap.read()
     #cv2.imshow('frame', frame)
     image = cv2.resize(frame, (255, 255))
@@ -352,10 +345,8 @@ def vision():
     elif Class[0,9] >= 0.5:
         deteccion=9
         print('tomato')
-    #if cv2.waitKey(1) == ord('q'):
+    #if cv2.waitKey(1) == ord('q'):""" 
     vision()
-"""    
-
 def delete_selected():
     try:
         selected = listbox.get(listbox.curselection())
@@ -395,6 +386,7 @@ def borrarOmostrarqr():
         frameqr.grid(padx=1,column = 0, row = 0,sticky=E,columnspan=3)
         qrfun()
         frameqr.after(5000, borrarOmostrarqr)
+    print("datos agregados")
     fireadd()
 
 #Variables usadas
