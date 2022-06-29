@@ -1,6 +1,7 @@
 from tkinter import *
 import tkinter as tk
 import os
+import pyrebase
 import webbrowser
 from tkinter import filedialog
 from PIL import Image
@@ -15,7 +16,7 @@ import random
 import sys
 import cv2
 import numpy as np
-import tensorflow as tf
+#import tensorflow as tf
 import array as arr
 import qrcode
 from pyzbar.pyzbar import decode
@@ -39,6 +40,20 @@ hx.set_reference_unit(215.793)
 hx.reset()
 hx.tare()
 
+#Configuracion firebase
+config = {
+  "apiKey": "Hi3wqSGBS8D4UJlLxJgAbudQHIEznTuUTe9famth",
+  "authDomain": "proyectobalanzasmart.firebaseapp.com",
+  "databaseURL": "https://proyectobalanzasmart-default-rtdb.firebaseio.com",
+  "projectId": "proyectobalanzasmart",
+  "storageBucket": "proyectobalanzasmart.appspot.com",
+  "messagingSenderId": "893862381713",
+  "appId": "1:893862381713:web:8ed11c18556d094e475730",
+}
+firebase = pyrebase.initialize_app(config)
+storage=firebase.storage()
+db = firebase.database()
+
 #Definiciones usadas
 def cleanAndExit():
     print("Cleaning...")
@@ -47,28 +62,27 @@ def cleanAndExit():
     print("Bye!")
     sys.exit()
 def agregar_datos():
-	global DNI1, producto1, peso1
-	DNI1.append(ingresa_DNI.get())
+	global DOC1, producto1, peso1
+	DOC1.append(ingresa_DOC.get())
 	#producto1.append(ingresa_producto.get())
 	#peso1.append(ingresa_peso.get())
-	ingresa_DNI.delete(0,END)
+	ingresa_DOC.delete(0,END)
 	#ingresa_producto.delete(0,END)
 	#ingresa_peso.delete(0,END)
 def excel():
-    global DNI1, producto1, peso1, balanza
-    datos = {'DNI':DNI1} 
-    #df = pd.DataFrame(datos,columns =['DNI'])
+    global DOC1, producto1, peso1, balanza, db
+    #df = pd.DataFrame(datos,columns =['DOC'])
     #escritor=pd.ExcelWriter('C:/Users/Aprender Creando/Documents/BalanzaConection/Data_Balanza.xlsx',engine='xlsxwriter')
     #df.to_excel(escritor,sheet_name="Usuarios",index=False)
     #escritor.save()
-    lbl_u.insert(0,DNI1.pop())
+    UDNI=DOC1.pop()
+    lbl_u.insert(0,UDNI)
+    #datos = {'DNI':UDNI}
+    #db.child("Cliente").set(datos)
     print("Data agregada")
 def funcion():
-    global DNI1
     ws.state(newstate  = "normal")
-    print(len(DNI1.pop()))
     root.state(newstate  = "withdraw")
-    iniciar()
 def funcion2():
     global muestra, nivel
     ws.state(newstate  = "withdraw")
@@ -109,7 +123,7 @@ def agregarimage():
     absolute_image_pathg = os.path.join(absolute_folder_path, 'gradiente.png')
     grad= tk.PhotoImage(file =absolute_image_pathg)
 
-    absolute_image_pathi = os.path.join(absolute_folder_path, 'iconHome.png')
+    absolute_image_pathi = os.path.join(absolute_folder_path, 'iconhome.png')
     iconhome1 = Image.open(absolute_image_pathi).resize((60,60),Image.ANTIALIAS)
     iconhome= ImageTk.PhotoImage(iconhome1)
 
@@ -121,7 +135,7 @@ def agregarimage():
     settings1 = Image.open(absolute_image_paths).resize((60,60),Image.ANTIALIAS)
     settings=ImageTk.PhotoImage(settings1)
 
-    absolute_image_pathc = os.path.join(absolute_folder_path, 'Configuracion.png')
+    absolute_image_pathc = os.path.join(absolute_folder_path, 'configuracion.png')
     configuracion1 = Image.open(absolute_image_pathc).resize((210,60),Image.ANTIALIAS)
     configuracion=ImageTk.PhotoImage(configuracion1)
 
@@ -270,11 +284,20 @@ def add_item():
         list_data.append(producto1.get())
         producto1.set("")
         flag=0
-    borrarOmostrar()     
+    borrarOmostrar()
+
+def fireadd():
+    global DOC1, list_data, producto1, peso1, balanza, db
+    UDNI=DOC1.pop()
+    datosDNI = {'DNI':UDNI}
+    letras = {'Productos':list_data}
+    db.child("Cliente").set(datosDNI)
+    db.child("Cliente").set(letras)
+    print("Data agregada")
+
 def add_item2():
     global list_data,flag,fixedlen
     if producto2 != "" and flag==1:
-        #listbox.insert(END, "{:<15s}  {:<10s} {:>15s}".format("Producto","Peso (Kg)","Costo (S/.)") )
         item = ("{:<20s}"+(fixedlen-len(str(producto2.get())))*" " +"{:<10.2f}"+(fixedlen-len(str(val)))*" " +"{:<10s}"+(fixedlen-len(str("Costo")))*"").format(producto2.get(),val,"Costo")
         listbox.insert(END,item)
         list_data.append(producto2.get())
@@ -290,7 +313,7 @@ def vision():
     lbl_pc3.config(text = producto2.get())
     lbl_pc1.grid(row=0,column=0)
     lbl_pc3.grid(row=1,column=0)
-def detectar():
+""" def detectar():
     global cap,model,deteccion
     ret, frame = cap.read()
     #cv2.imshow('frame', frame)
@@ -331,6 +354,8 @@ def detectar():
         print('tomato')
     #if cv2.waitKey(1) == ord('q'):
     vision()
+"""    
+
 def delete_selected():
     try:
         selected = listbox.get(listbox.curselection())
@@ -345,7 +370,7 @@ def delete_selected():
     except:
         pass
 def qrfun():
-    global iconlqr
+    global iconlqr, listadata
     qr = qrcode.QRCode(
         version= 1,
         box_size=10,
@@ -370,6 +395,7 @@ def borrarOmostrarqr():
         frameqr.grid(padx=1,column = 0, row = 0,sticky=E,columnspan=3)
         qrfun()
         frameqr.after(5000, borrarOmostrarqr)
+    fireadd()
 
 #Variables usadas
 cap = None
@@ -380,7 +406,7 @@ width=1020
 height=720
 deteccion=0
 producto1,producto2=[],[]
-DNI1,producto,peso1 = [],[],[]
+DOC1,producto,peso1 = [],[],[]
 nivel = 0
 min_w = 70
 max_w = 220
@@ -391,7 +417,7 @@ hora=0
 val=0
 muestra=0
 flag=0
-model = tf.keras.models.load_model("C:/Users/Aprender Creando/Documents/modeloproduct.h5")
+#model = tf.keras.models.load_model("C:/Users/Aprender Creando/Documents/modeloproduct.h5")
 alimentos=["manzana","platano","beterraga","zanahoria","maiz","limon","cebolla","papa","camote ","tomate "]
 #Primera Ventana
 root = Tk()
@@ -421,9 +447,9 @@ title = tk.Label(
     fg="white", font=("Arial-BoldMT", int(30.0)))
 title.place(x=27.0, y=110.0)
 
-ingresa_DNI = tk.Entry(bd=0, bg="black", highlightthickness=0, fg='white')
-ingresa_DNI.place(x=590.0, y=280, width=321.0, height=35)
-usuario_actual = StringVar(value=ingresa_DNI)
+ingresa_DOC = tk.Entry(bd=0, bg="black", highlightthickness=0, fg='white')
+ingresa_DOC.place(x=590.0, y=280, width=321.0, height=35)
+usuario_actual = StringVar(value=ingresa_DOC)
 
 path_picker_button = tk.Button(
     image=ingresar,
@@ -486,7 +512,7 @@ lblfh_canvas = canvas.create_window((width*21/24)-30, height*2/15,	anchor = "cen
 lbl_fd = Label(	ws, width=9,	height=0, font =('Georgia', 21,"bold"), bg='black', fg='#2989cc')
 lblfd_canvas = canvas.create_window((width*21/24)-30, height*2/15+30,	anchor = "center",	window = lbl_fd	)
 refrescar_reloj()
-
+iniciar()
 #Menu desplegable lateral
 ws.update() # For the width to get updated
 frame = Frame(ws, bg='black', width=70, height=720)
