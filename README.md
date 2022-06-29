@@ -22,17 +22,8 @@ import numpy as np
 import tensorflow as tf
 import array as arr
 
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   const firebaseConfig = {
-    apiKey: "AIzaSyD2876tJ2zAdFriWTOKZfWZTOS4L9s5ytY",
+    apiKey: "Hi3wqSGBS8D4UJlLxJgAbudQHIEznTuUTe9famth",
     authDomain: "proyectobalanzasmart.firebaseapp.com",
     projectId: "proyectobalanzasmart",
     storageBucket: "proyectobalanzasmart.appspot.com",
