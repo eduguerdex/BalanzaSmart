@@ -17,36 +17,13 @@ db = firebase.database()
 print("Send Data to Firebase Using Raspberry Pi")
 a=random.randrange(20)/2.5
 print(a)
-data={"key1":a}
-db.child("Valor").set(data)
-"""
-import tkinter as tk
+UDNI=70088669
 
 
-root = tk.Tk()
+datosDNI = {'DNI':UDNI}
+lista_data=["Manzana","Banana"]
+letras = {'Productos':lista_data}
 
-def entry(text):
-	l = tk.Label(text=text)
-	l.pack()
-	e = tk.Entry(root)
-	e.pack()
-
-author = entry("Author")
-edition = entry("Edition")
-
-def seedata():
-	data2 = data[lbx.get(lbx.curselection())]
-	for k in data2:
-		lbx2.insert(tk.END, k + ": " + str(data2[k]))
-
-lbx = tk.Listbox(root)
-lbx.pack()
-data = db.get(address, "books")
-for k in data:
-	lbx.insert(tk.END, k)
-lbx2 = tk.Listbox(root)
-lbx2.pack()
-lbx.bind("<<ListboxSelect>>", lambda x: seedata())
-
-root.mainloop()
-"""
+db.child("Cliente").update(datosDNI)
+db.child("Cliente").update(letras)
+print("Data agregada")
