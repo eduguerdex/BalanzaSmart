@@ -41,6 +41,8 @@ import array as arr
     measurementId: "G-NQGT8FZZTL"
   };
 
+  https://proyectobalanzasmart-default-rtdb.firebaseio.com
+  
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
