@@ -46,13 +46,13 @@ for t in range(30):
             #print(conteo)
         elif round(memoria[t])<0.1:
             nuevo_time=time.time()-start_time
-            print(nuevo_time)
+            #print(nuevo_time)
             conteo=0
             total=[]
         else:
             conteo=0
             total=[]
-            print("esperar unos segundos, calculando peso")
+            print("Producto detectado, calculando peso")
         if conteo>6:
             peso=round(sum(total)/len(total),3)
             print("peso del producto: ",peso,"detectado al segundo",round(((time.time()-start_time)-nuevo_time),2))
