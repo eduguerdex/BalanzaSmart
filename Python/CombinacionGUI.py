@@ -36,7 +36,7 @@ else:
 hx = HX711(5, 6)
 hx.set_reading_format("MSB", "MSB")
 #-223.999
-hx.set_reference_unit(215.793)
+hx.set_reference_unit(223.2207)
 hx.reset()
 hx.tare()
 
@@ -53,6 +53,10 @@ config = {
 firebase = pyrebase.initialize_app(config)
 storage=firebase.storage()
 db = firebase.database()
+GPIO_TRIGGER = 23
+GPIO_ECHO = 24
+GPIO.setup(GPIO_TRIGGER, GPIO.OUT)
+GPIO.setup(GPIO_ECHO, GPIO.IN)
 
 #Definiciones usadas
 def cleanAndExit():
@@ -82,14 +86,14 @@ def funcion2():
     ws.state(newstate  = "withdraw")
     root.state(newstate  = "normal") 
     frame2.grid_forget()
-    muestra = 0
+    muestra=0
     move=150
     nivel=0
     print(muestra)
     val=0
     #############TEXTO ################
     texto = '0 Kg'
-    print("valor",val)
+    print("balanza en",val)
     texbal = Label(	ws,text=' 0 Kg',    width=5,	height=0, font=('Arial',22, 'bold'), bg='gray22',fg ='deep sky blue')
     texbal_canva = canvas.create_window(485+move, 380,anchor = "center",	window = texbal	)
     canvas.create_oval(415+move,290,555+move,430, fill='gray22', outline='white', width=6)
@@ -187,29 +191,80 @@ def visualizar():
         else:
             lblVideo.image = ""
             cap.release()
+def distance():
+    global muestra
+    GPIO.output(GPIO_TRIGGER, True)
+    time.sleep(0.00001)
+    GPIO.output(GPIO_TRIGGER, False)
+    StartTime = time.time()
+    StopTime = time.time()
+    while GPIO.input(GPIO_ECHO) == 0:
+        StartTime = time.time()
+    while GPIO.input(GPIO_ECHO) == 1:
+        StopTime = time.time()
+    TimeElapsed = StopTime - StartTime
+    distancia = (TimeElapsed * 34300) / 2
+    time.sleep(0.01)
+    if distancia<20 and muestra==0:
+        btn.place_forget()
+        print ("Distancia detectada = %.1f cm" % distancia)
+        progressBar()
+        detectar()
+        muestra=1
+    elif muestra==1:
+        btn.place(x=(width*15/24), y=(height*12/15),anchor = "center")    
+    ws.after(100, distance)
 def finalizar():
     global cap
     cap.release()
+def pesaje():
+    memoria=[]
+    start_time=time.time()
+    nuevo_time=time.time()
+    conteo=0
+    total=[]
+    for t in range(30):
+        val=round(abs(hx.get_weight(5)/1000),4)
+        memoria.append(val)
+        hx.power_down()
+        hx.power_up()
+        n=len(memoria)
+        if n>1:
+            if round(memoria[t],2)==round(memoria[t-1],2):
+                conteo+=1
+                total.append(memoria[t])
+                #print(conteo)
+            elif round(memoria[t])<0.1:
+                nuevo_time=time.time()-start_time
+                #print(nuevo_time)
+                conteo=0
+                total=[]
+            else:
+                conteo=0
+                total=[]
+                print("Producto detectado, calculando peso")
+            if conteo>6:
+                pesado=round(sum(total)/len(total),3)
+                print("peso del producto: ",pesado)
+                return(pesado)
+        time.sleep(0.0001)
+    
 def progressBar():
     global nivel, move,val,flag
     muestra=1
     print(muestra)
     move=150
     if muestra==1:
-        #val=round(hx.get_weight(5)/1000,2)
-        val=random.randrange(20)
-        nivel = int(val)
+        val=pesaje()
+        nivel = round(val,2)
         flag=1
-        #hx.power_down()
-        #hx.power_up()
-        #x0,y0,x1,y1
-        texbal = Label(	ws,    text=str(nivel) + ' Kg',    width=5,	height=0, font=('Arial',22, 'bold'), bg='gray22',fg ='deep sky blue')
+        texbal = Label(	ws,    text=str(nivel) + ' Kg',    width=6,	height=0, font=('Arial',15, 'bold'), bg='gray22',fg ='deep sky blue')
         texbal_canva = canvas.create_window(485+move, 380,anchor = "center",	window = texbal	)
         #############TEXTO ################
         texto = str(nivel) + ' Kg'
         canvas.create_oval(415+move,290,555+move,430, fill='gray22', outline='white', width=6)
         #canvas.create_text(485+move, 380, text= texto, font=('Arial',22, 'bold'), fill ='deep sky blue')
-        canvas.create_text(485+move, 335, text= 'PESO' , font=('Cambria Math',22, 'bold'), fill ='white')  	
+        canvas.create_text(485+move, 335, text= 'PESO' , font=('Cambria Math',22, 'bold'), fill ='white')
 def expand():
     global cur_width, expanded,move
     move=0
@@ -489,8 +544,6 @@ canvas.create_text((width/2)+70, height/15, text = 'Balanza Smart', fill='white'
 canvas.create_oval(390+move,265,575+move,430, fill="", outline ='',width=5)
 canvas.create_oval(392+move,270,578+move,450, fill= '', outline='white', width= 6)
 
-btn = Button(ws,image=peso,command=lambda:[progressBar(),detectar()] ,bg='#2989cc',relief='flat')
-btn_canvas = canvas.create_window((width*15/24), height*12/15,anchor = "center",window = btn)
 lblVideo = Label(ws,width=320,height=350)
 lblVideo_canvas3 = canvas.create_window((width*2/24)+50, height*3/15,anchor = "nw",window = lblVideo)
 
@@ -505,6 +558,8 @@ lbl_fd = Label(	ws, width=9,	height=0, font =('Georgia', 21,"bold"), bg='black',
 lblfd_canvas = canvas.create_window((width*21/24)-30, height*2/15+30,	anchor = "center",	window = lbl_fd	)
 refrescar_reloj()
 iniciar()
+pesaje()
+distance()
 #Menu desplegable lateral
 ws.update() # For the width to get updated
 frame = Frame(ws, bg='black', width=70, height=720)
@@ -547,6 +602,9 @@ listbox.grid(row=1,column=1,pady=0)
 listbox.insert(END, "{:<15s}  {:<10s} {:>15s}".format("Producto","Peso (Kg)","Costo (S/.)") )
 eliminar = Button(	ws,   text="Eliminar\nseleccionado",    width=10,	height=2,command=delete_selected,font=('Georgia', 9,"bold"))
 pagar = Button(	ws,    text="Pagar\nproductos",    width=10,	height=2,command=borrarOmostrarqr,font=('Georgia', 9,"bold"))
+
+btn = Button(ws,image=peso,command=lambda:[progressBar(),detectar()] ,bg='#2989cc',relief='flat')
+
 
 #barra=Scrollbar(ws, command=listbox.yview)
 #barra.grid(row=2,column=1,pady=0)
