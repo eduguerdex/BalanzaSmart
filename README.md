@@ -23,16 +23,7 @@ import tensorflow as tf
 import array as arr
 
   const firebaseConfig = {
-    apiKey: "Hi3wqSGBS8D4UJlLxJgAbudQHIEznTuUTe9famth",
-    authDomain: "proyectobalanzasmart.firebaseapp.com",
-    projectId: "proyectobalanzasmart",
-    storageBucket: "proyectobalanzasmart.appspot.com",
-    messagingSenderId: "893862381713",
-    appId: "1:893862381713:web:8ed11c18556d094e475730",
-    measurementId: "G-NQGT8FZZTL"
-  };
-
-  https://proyectobalanzasmart-default-rtdb.firebaseio.com
+}
   
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
