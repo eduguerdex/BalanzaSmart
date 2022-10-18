@@ -17,7 +17,7 @@ import random
 import sys
 import cv2
 import numpy as np
-import tensorflow as tf
+#import tensorflow as tf
 import array as arr
 import qrcode
 from pyzbar.pyzbar import decode
@@ -41,20 +41,21 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import matplotlib.patches as mpatches
 import seaborn as sb
+import sys
 
 mail="guerdex@guerdex.com"
-clave=""
+clave="be53409620026d7f570fe25fc2f3853d25f9eab"
 credentials={
   "type": "service_account",
-  "project_id": "",
-  "private_key_id": "",
-  "private_key": ""
-  "client_email": "@appspot.gserviceaccount.com",
-  "client_id": "",
+  "project_id": "proyectobalanzasmart",
+  "private_key_id": "cbe53409620026d7f570fe25fc2f3853d25f9eab",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC4wE/wuZIo+I5p\neHWR5Kf3lwzHwClucdAQKojZUzbAwbiDeeVIDvXWKkB8b9iwy59jF6+hHdKim1VF\nTu6uhq7dWG7eqAuvgqgNzDGOBE4HPF+lO9t4vwBcXgVpGRn+jKiGfLOiYr7FJVvr\nK7x+IAj0jhIVa+Ea3SVVBoGKs8Rr356D4YZzvYTUV1vNJ9jA8p9ZfbQ8/zdjqD+v\nlDbYRzeEMB0+5smijhPAVavqPgf513R7GObKWdOB1uclO1v0H4U4XydQ36vv2K3Y\nRrXf3pOoWvqErhrr+26JpAPZAMPF5Jaq42ZfbkQL2LTs3yY3L/B/TVpBuktDqiLj\nFMTYMdpjAgMBAAECggEAPXQewyR/BSjUeinK9cn4wycX5bO6NFYgTthPJ/cBjfGC\nNh2MUkFDrcblJ18u1XQN4vDEh1O7tkH0BbdhNmVvcgoR6vc719genWRQEXzGFasT\n54r3EH18Gb1ekFx8pIrWHdIKEJhG+53XKu0j6FIwmGRPiJeXS4/G9LbSzTfJvNWW\n/3z2VaZmynejHymh/N7vlCQnJ2lIqwKBiMjMh44TuCX1GLvkqVKkIPTikYVWGakA\nfxhsX55xggqTN0U7DhR6FAT4RnmdZoQgFZpAJzecwyplNcAm+zrj21NNC12QXkLU\n2gv797QiXk9EGtMh6ToeD+czWKz8VWwUOjrkIp2QvQKBgQDin+JAiJpiaS82nMY2\nb4hXddv7mlMy7SGnq84Pjr/rRmp1h0sPhqD1ZxWIgs+OutOeBytQBcYCkicJag5Y\nMgwaRiJFvsVYehvmejluGJfunHvAI/Ttz7cPPtDuqNg6E1frGnyAoHUfWX7VZn4A\n74F8PVX40/R4/NcSislQ27GaHwKBgQDQsvCLCez2f/YJAdhgJNyUboMe0Fw+YMBg\nawqeno+mZ4YM0dZYaE07ni2eYcQ3b62rM2esbxZyuCDGmre9yxCmfDpaVCDeWPE8\nPaReKWUMcBISj2Yo01GTn8k+SzzB2zzs5NtAMn3iRtg6JcgM1/pfKpOHjJ5kki1M\nXJppTL2/PQKBgG78nnG8dN99ZAH7BZfjR4KN1g6Cpfxq5fCX03MLFjLDaZ/lgn04\nEdwdgA47AiuEk97w4+Vs7myT50pVBnFrEUJM1rwRkdSi+McHVNj2cnIJcRHIiktt\nTtnIicpYJo1Kq+QYNKFJ9BJGYjdg2pTaty+BWnliVHhsW2hZT/6pmXFBAoGASX87\nBzwvn3/g/bsQoItaw0tIEgn+8ljQZyRLUSE2Jbw/kTQ08F2LFXvXRPfZSkyiNLCd\nyjQ1C6GcqVTDcKua6YbGZhlKmgNosXZj9GVPmNm/A5pMuAPzrrGPBckpVHwJMMRI\nEou1mYKpk5DKqvtEyU8NNadoALMaENJr7rl/+WECgYANCbwACnOFF9KkrYE6kQ+p\nFD1tmfAvSp6xk7izLut83dbmxCiGiNQFfWza3J5OwrA+OBdOSctYweVZBCtUE+pi\nLpd+k2n6AckSGtcFnYLCdTrP7Vms4lqzVzZwA1rsSV9JdL2+bGvM3hhlMUL7VrXk\nzyYSpYRBtf0SxUMkhq8cdw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "proyectobalanzasmart@appspot.gserviceaccount.com",
+  "client_id": "105104323822216977545",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
   "token_uri": "https://oauth2.googleapis.com/token",
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/%40appspot.gserviceaccount.com"
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/proyectobalanzasmart%40appspot.gserviceaccount.com"
 }
 gc = gspread.service_account_from_dict(credentials)
 EMULATE_HX711=False
@@ -63,16 +64,16 @@ user_user_sim_matrix=[]
 customer_item_matrix=[]
 referenceUnit = 1
 #Calibracion Balanza
-# if not EMULATE_HX711:
-#     import RPi.GPIO as GPIO
-#     from hx711 import HX711
-# else:
-#     from emulated_hx711 import HX711
-# hx = HX711(5, 6)
-# hx.set_reading_format("MSB", "MSB")
-# hx.set_reference_unit(215.793)
-# hx.reset()
-# hx.tare()
+if not EMULATE_HX711:
+    import RPi.GPIO as GPIO
+    from hx711 import HX711
+else:
+    from emulated_hx711 import HX711
+hx = HX711(5, 6)
+hx.set_reading_format("MSB", "MSB")
+hx.set_reference_unit(215.793)
+hx.reset()
+hx.tare()
 
 #Definiciones usadas
 def capturadatos():
@@ -225,7 +226,7 @@ def agregarimage():
     absolute_image_pathg = os.path.join(absolute_folder_path, 'gradiente.png')
     grad= tk.PhotoImage(file =absolute_image_pathg)
 
-    absolute_image_pathi = os.path.join(absolute_folder_path, 'iconHome.png')
+    absolute_image_pathi = os.path.join(absolute_folder_path, 'iconhome.png')
     iconhome1 = Image.open(absolute_image_pathi).resize((60,60),Image.ANTIALIAS)
     iconhome= ImageTk.PhotoImage(iconhome1)
 
@@ -237,7 +238,7 @@ def agregarimage():
     settings1 = Image.open(absolute_image_paths).resize((60,60),Image.ANTIALIAS)
     settings=ImageTk.PhotoImage(settings1)
 
-    absolute_image_pathc = os.path.join(absolute_folder_path, 'Configuracion.png')
+    absolute_image_pathc = os.path.join(absolute_folder_path, 'configuracion.png')
     configuracion1 = Image.open(absolute_image_pathc).resize((210,60),Image.ANTIALIAS)
     configuracion=ImageTk.PhotoImage(configuracion1)
 
@@ -377,6 +378,8 @@ def borrarOmostrar():
         pagar.place_forget()
         eliminar.place_forget()
     else:
+        width=1020
+        height=720
         frame2.grid(padx=1,column = 0, row = 0,sticky=E,columnspan=3)
         pagar.place(x=(width*9/12)+20, y=495.0)
         eliminar.place(x=(width*10/12)+65, y=495.0)
@@ -439,7 +442,7 @@ def detectar():
     ret, frame = cap.read()
     #cv2.imshow('frame', frame)
     image = cv2.resize(frame, (255, 255))
-    X = tf.keras.utils.img_to_array(image)
+    #X = tf.keras.utils.img_to_array(image)
     X = np.expand_dims(X, axis=0)
     X = X/255
     Class = model.predict(X)
@@ -500,7 +503,7 @@ def qrfun():
     qr.add_data(datos)
     qr.make(fit=True)
     img = qr.make_image(fill_color='black',back_color='#2989cc')
-    img.save('C:/Users/Aprender Creando/Documents/qrcode.png')
+    img.save('/home/utec/Desktop/BalanzaSmart/GUI/qrcode.png')
     absolute_folder_pathqr = os.path.dirname(os.path.realpath(__file__))
     absolute_image_pathqr = os.path.join(absolute_folder_path, 'qrcode.png')
     logoqr = tk.PhotoImage(file = absolute_image_pathqr)
@@ -544,7 +547,7 @@ hora=0
 val=0
 muestra=0
 flag=0
-model = tf.keras.models.load_model("C:/Users/Aprender Creando/Documents/modeloproduct.h5")
+#model = tf.keras.models.load_model("C:/Users/Aprender Creando/Documents/modeloproduct.h5")
 alimentos=["manzana","platano","beterraga","zanahoria","maiz","limon","cebolla","papa","camote","tomate"]
 costos={"manzana":5.29,"platano":2.29,"beterraga":2.99,"zanahoria":3.49,"maiz":2.89,"limon":3.69,"cebolla":3.99,"papa":2.69,"camote":2.39,"tomate":3.29}
 precioreal=0
@@ -554,7 +557,7 @@ precioreal=0
 #Primera Ventana
 root = Tk()
 root.title("Registro")
-root.geometry('1020x720+5+0')
+root.geometry('1020x720+15+10')
 root.resizable(0, 0)
 root.config(bg='black')
 root.state(newstate  = "normal")
@@ -636,7 +639,7 @@ ws = Toplevel()
 var=StringVar()
 ws.state(newstate  = "withdraw")
 ws.title("Balanza Smart")
-ws.geometry('1020x720+10+0')
+ws.geometry('1020x720+15+10')
 ws.config(bg='black')
 ws.overrideredirect(True)
 canvas = Canvas(ws, height=720, width=1020,
@@ -667,7 +670,8 @@ refrescar_reloj()
 
 #Menu desplegable lateral
 ws.update() # For the width to get updated
-frame = Frame(ws, bg='black', width=70, height=ws.winfo_height())
+
+frame = Frame(ws, bg='black', width=70, height=720)
 frame.grid(column = 0, row = 0,sticky=W)
 # Iconos
 logo_b=Label(frame,image=iconlogo,bg='white',relief='flat')
