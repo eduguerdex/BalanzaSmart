@@ -17,13 +17,12 @@ import random
 import sys
 import cv2
 import numpy as np
-#import tensorflow as tf
+from tflite_runtime.interpreter import Interpreter
 import array as arr
 import qrcode
 from pyzbar.pyzbar import decode
 import pandas as pd
 import collections
-from mpl_toolkits.mplot3d import Axes3D
 from IPython import display
 import sklearn
 from sklearn.metrics.pairwise import cosine_similarity
@@ -298,39 +297,53 @@ def refrescar_reloj():
     variable_hora_actual.set(obtener_hora_actual())
     ws.after(INTERVALO_REFRESCO_RELOJ, refrescar_reloj)
 def iniciar():
-    global cap
+    global cap, cap2
     cap = cv2.VideoCapture(0)
+    cap2= cv2.VideoCapture(1)
     visualizar()
 def visualizar():
-    global cap
+    global cap, cap2
     if cap is not None:
         ret, frame = cap.read()
-        if ret == True:
-            frame = imutils.resize(frame, width=640,height=480)
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            im = Image.fromarray(frame)
-            img = ImageTk.PhotoImage(image=im)
-            lblVideo.configure(image=img)
-            lblVideo.image = img
-            lblVideo.after(10, visualizar)
+        ret2, fig2= cap2.read()
+        if ret == True and ret2 == True:
+            x240=500
+            x0=x240-240
+            fig11=frame[150:450,150:550]
+            frame = imutils.resize(fig11, width=240,height=240)
+            frame2 = imutils.resize(fig2, width=240,height=240)
+            cv2image= cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+            cv2image2= cv2.cvtColor(frame2,cv2.COLOR_BGR2RGB)
+            img = Image.fromarray(cv2image)
+            img2 = Image.fromarray(cv2image2)
+            imgtk = ImageTk.PhotoImage(image = img)
+            imgtk2 = ImageTk.PhotoImage(image = img2)
+            lblVideo.imgtk = imgtk
+            lblVideo2.imgtk2 = imgtk2
+            lblVideo.configure(image=imgtk)
+            lblVideo2.configure(image=imgtk2)
+            lblVideo.after(15, visualizar)
         else:
             lblVideo.image = ""
+            lblVideo2.image = ""
             cap.release()
+            cap2.release()
 def finalizar():
-    global cap
+    global cap, cap2
     cap.release()
+    cap2.release()
 def progressBar():
     global nivel, move,val,flag
     muestra=1
     print(muestra)
     move=150
     if muestra==1:
-        #val=round(hx.get_weight(5)/1000,2)
-        val=random.randrange(20)
+        val=round(hx.get_weight(5)/1000,2)
+        #val=random.randrange(20)
         nivel = val
         flag=1
-        #hx.power_down()
-        #hx.power_up()
+        hx.power_down()
+        hx.power_up()
         #x0,y0,x1,y1
         texbal = Label(	ws,    text=str(nivel) + ' Kg',    width=6,	height=0, font=('Arial',16, 'bold'), bg='gray22',fg ='deep sky blue')
         texbal_canva = canvas.create_window(485+move, 380,anchor = "center",	window = texbal	)
@@ -438,11 +451,11 @@ def vision():
     lbl_pc1.grid(row=0,column=0)
     lbl_pc3.grid(row=1,column=0)
 def detectar():
-    global cap,model,deteccion
+    global cap,cap2,model,deteccion
     ret, frame = cap.read()
     #cv2.imshow('frame', frame)
     image = cv2.resize(frame, (255, 255))
-    #X = tf.keras.utils.img_to_array(image)
+    X = tf.keras.utils.img_to_array(image)
     X = np.expand_dims(X, axis=0)
     X = X/255
     Class = model.predict(X)
@@ -529,6 +542,7 @@ def clear():
 
 #Variables usadas
 cap = None
+cap2 = None
 fixedlen = 10
 list_data=[]
 INTERVALO_REFRESCO_RELOJ = 300  # En milisegundos
@@ -654,8 +668,11 @@ canvas.create_oval(392+move,270,578+move,450, fill= '', outline='white', width= 
 
 btn = Button(ws,image=peso,command=lambda:[progressBar(),detectar()] ,bg='#2989cc',relief='flat')
 btn_canvas = canvas.create_window((width*15/24), height*12/15,anchor = "center",window = btn)
-lblVideo = Label(ws,width=320,height=350)
-lblVideo_canvas3 = canvas.create_window((width*2/24)+50, height*3/15,anchor = "nw",window = lblVideo)
+
+lblVideo = Label(ws)
+lblVideo_canvas3 = canvas.create_window((width*4/24)-10, height*3/15,anchor = "nw",window = lblVideo)
+lblVideo2 = Label(ws)
+lblVideo2_canvas3 = canvas.create_window((width*4/24)-10, (height*3/15)+170,anchor = "nw",window = lblVideo2)
 
 lbl_u = Listbox(ws,height=1, width=10,bg='#2989cc',fg='black',font=('Georgia', 15,"bold"),justify='center')
 lblu_canvas = canvas.create_window(	(width*5/24)+70, height*2/15,	anchor = "center",	window = lbl_u	)
