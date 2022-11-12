@@ -61,16 +61,16 @@ void Color(int G, int B, int R) {
 void loop() {
   distancia = 0.01723 * readUltrasonicDistance(Trigger, Echo);
   balanza.set_scale(calibration_factor); //Adjust to this calibration factor
-  valor=(balanza.get_units(), 3)
+  valor=(balanza.get_units(), 3);
   if (distancia <=30){
     Serial.println("o");
     Color(0,255,0);
     delay(1000);
   }
-  else{
+  else if(distancia>30 && distancia <=70){
     Color(0,0,0);
     Serial.println("a");
-    delay(500);
+    delay(1000);
   }
   if (Serial.available() > 0){
     option = Serial.read();
