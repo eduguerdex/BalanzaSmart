@@ -65,6 +65,7 @@ customer_item_matrix=[]
 referenceUnit = 1
 fig11=''
 datos=''
+dist=0
 arduino = serial.Serial('COM13',9600,timeout=1)
 arduino.close()
 arduino.open()
@@ -193,7 +194,7 @@ def funcion2():
     val=0
     #############TEXTO ################
     texto = '0 Kg'
-    print("valor",val)
+    print("valor: ",val)
     texbal = Label(	ws,text=' 0 Kg',    width=5,	height=0, font=('Arial',22, 'bold'), bg='gray22',fg ='deep sky blue')
     texbal_canva = canvas.create_window(485+move, 380,anchor = "center",	window = texbal	)
     canvas.create_oval(415+move,290,555+move,430, fill='gray22', outline='white', width=6)
@@ -271,15 +272,19 @@ def agregarimage():
     inqr= Image.open(absolute_image_pathqr).resize((250,250),Image.ANTIALIAS)
     QR = ImageTk.PhotoImage(inqr)
 def arduinorecibe():
-    global datos
-    datos = arduino.readline().decode('ascii')
-    datos=datos.strip()
-    print(datos)
-    if str(datos)=='a':
-        sbc.fade_brightness(0) 
-    elif str(datos)=='o':
-        sbc.fade_brightness(100) 
-    root.after(1000, arduinorecibe)
+    global datos, dist
+    print("dist: ",dist)
+    if dist==0:
+        cad = arduino.readline().decode('ascii')
+        pos=cad.find(":")
+        eti=cad[:pos]
+        val=cad[pos+1:]
+        flag=1
+        if eti=='a':
+            sbc.fade_brightness(val) 
+        elif eti=='o':
+            sbc.fade_brightness(val) 
+        root.after(1000, arduinorecibe)
     
 def obtener_hora_actual():
     global dia, fecha, hora
@@ -306,9 +311,14 @@ def refrescar_reloj():
     variable_hora_actual.set(obtener_hora_actual())
     ws.after(INTERVALO_REFRESCO_RELOJ, refrescar_reloj)
 def iniciar():
-    global cap, cap2
+    global cap, cap2, dist
+    dist=1
     cap = cv2.VideoCapture(2)
     cap2= cv2.VideoCapture(0)
+    if dist==1:
+        sbc.fade_brightness(100)
+    elif dist==0:
+        sbc.fade_brightness(0)
     visualizar()
 def visualizar():
     global cap, cap2, fig11
@@ -338,29 +348,46 @@ def visualizar():
             cap.release()
             cap2.release()
 def finalizar():
-    global cap, cap2
+    global cap, cap2, dist
+    dist=0
     cap.release()
     cap2.release()
+    arduinorecibe()
 def progressBar():
-    global nivel, move,val,flag
+    global nivel, move,val
     muestra=1
-    print(muestra)
-    move=150
-    if muestra==1:
-        #val=round(hx.get_weight(5)/1000,2)
-        val=random.randrange(2)
-        nivel = val/4
+    arduino.write(b'i')
+    ws.after(1000,get_data())    	
+def get_data():
+    global val_anterior, nivel, move,val,flag, arduino, cod,pasaje
+    try:
+        cad = arduino.readline().decode('ascii').strip()
+        print(cad)
+        pos=cad.find(":")
+        eti=cad[:pos]
+        val=cad[pos+1:]
         flag=1
-        #hx.power_down()
-        #hx.power_up()
-        #x0,y0,x1,y1
-        texbal = Label(	ws,    text=str(nivel) + ' Kg',    width=6,	height=0, font=('Arial',16, 'bold'), bg='gray22',fg ='deep sky blue')
-        texbal_canva = canvas.create_window(485+move, 380,anchor = "center",	window = texbal	)
-        #############TEXTO ################
-        texto = str(nivel) + ' Kg'
-        canvas.create_oval(415+move,290,555+move,430, fill='gray22', outline='white', width=6)
-        #canvas.create_text(485+move, 380, text= texto, font=('Arial',22, 'bold'), fill ='deep sky blue')
-        canvas.create_text(485+move, 335, text= 'PESO' , font=('Cambria Math',22, 'bold'), fill ='white')  	
+        if cad!=val_anterior:
+            if eti=='pes':
+                val_anterior=cad
+                pesaje=val
+                move=150
+                texbal = Label(	ws,    text=pesaje+ ' Kg',    width=6,	height=0, font=('Arial',16, 'bold'), bg='gray22',fg ='deep sky blue')
+                texbal_canva = canvas.create_window(485+move, 380,anchor = "center",	window = texbal	)
+                #############TEXTO ################
+                pesaje=float(pesaje)
+                print("pesaje: ",pesaje," kg")
+                canvas.create_oval(415+move,290,555+move,430, fill='gray22', outline='white', width=6)
+                #canvas.create_text(485+move, 380, text= texto, font=('Arial',22, 'bold'), fill ='deep sky blue')
+                canvas.create_text(485+move, 335, text= 'PESO' , font=('Cambria Math',22, 'bold'), fill ='white')
+            else:
+                print("NO PESO")
+                ws.after(1000,progressBar())
+        else:
+            print("repetido")
+            ws.after(1000,progressBar())
+    except:
+        pass
 def expand():
     global cur_width, expanded,move
     move=0
@@ -424,38 +451,42 @@ def delete():
     lbl_u.delete(tk.END, tk.END)
     list_data = []
 def calc_costos(producto):
-    global alimentos, costos,deteccion,deteccion2,deteccion3,val,precioreal
+    global alimentos,val, costos,deteccion,deteccion2,deteccion3,precioreal
     seleccionado=producto
     precio=costos[str(seleccionado)]
-    precioreal=precio*val/1#tomando 1kg como valor base de costos
-    print(precioreal)
+    print("precio: ",precio,"pesaje: ",val)
+    pesaje=float(val)
+    precioreal=precio*pesaje/1#tomando 1kg como valor base de costos
 def add_item():
-    global list_data,flag,fixedlen, precioreal
+    global list_data,flag,fixedlen, precioreal,val, pesaje
     calc_costos(producto1.get())
+    pesaje=float(val)
     if producto1 != "" and flag==1:
-        item = ("{:<20s}"+(fixedlen-len(str(producto1.get())))*" " +"{:<10.2f}"+(fixedlen-len(str(val)))*" " +"{:<10.1f}"+(fixedlen-len(str(precioreal)))*"").format(producto1.get(),val,precioreal)
+        item = ("{:<20s}"+(fixedlen-len(str(producto1.get())))*" " +"{:<10.2f}"+(fixedlen-len(str(pesaje)))*" " +"{:<10.1f}"+(fixedlen-len(str(precioreal)))*"").format(producto1.get(),pesaje,precioreal)
         listbox.insert(END,item)
         list_data.append(producto1.get())
         producto1.set("")
         flag=0
     borrarOmostrar()     
 def add_item2():
-    global list_data,flag,fixedlen,precioreal
+    global list_data,flag,fixedlen,precioreal, pesaje,val
     calc_costos(producto2.get())
+    pesaje=float(val)
     if producto2 != "" and flag==1:
         #listbox.insert(END, "{:<15s}  {:<10s} {:>15s}".format("Producto","Peso (Kg)","Costo (S/.)") )
-        item = ("{:<20s}"+(fixedlen-len(str(producto2.get())))*" " +"{:<10.2f}"+(fixedlen-len(str(val)))*" " +"{:<10.1f}"+(fixedlen-len(str(precioreal)))*"").format(producto2.get(),val,precioreal)
+        item = ("{:<20s}"+(fixedlen-len(str(producto2.get())))*" " +"{:<10.2f}"+(fixedlen-len(str(pesaje)))*" " +"{:<10.1f}"+(fixedlen-len(str(precioreal)))*"").format(producto2.get(),pesaje,precioreal)
         listbox.insert(END,item)
         list_data.append(producto2.get())
         producto2.set("")
         flag=0
     borrarOmostrar()
 def add_item3():
-    global list_data,flag,fixedlen,precioreal
+    global list_data,flag,fixedlen,precioreal, pesaje,val
     calc_costos(producto3.get())
+    pesaje=float(val)
     if producto3 != "" and flag==1:
         #listbox.insert(END, "{:<15s}  {:<10s} {:>15s}".format("Producto","Peso (Kg)","Costo (S/.)") )
-        item = ("{:<20s}"+(fixedlen-len(str(producto3.get())))*" " +"{:<10.2f}"+(fixedlen-len(str(val)))*" " +"{:<10.1f}"+(fixedlen-len(str(precioreal)))*"").format(producto3.get(),val,precioreal)
+        item = ("{:<20s}"+(fixedlen-len(str(producto3.get())))*" " +"{:<10.2f}"+(fixedlen-len(str(pesaje)))*" " +"{:<10.1f}"+(fixedlen-len(str(precioreal)))*"").format(producto3.get(),pesaje,precioreal)
         listbox.insert(END,item)
         list_data.append(producto2.get())
         producto3.set("")
@@ -599,10 +630,14 @@ def clear():
     input_text.set("")
 
 #Variables usadas
+ced=[0,1]
+pesaje=0.0
+val_anterior=0
 cap = None
 cap2 = None
 fixedlen = 10
 list_data=[]
+isRun=False
 INTERVALO_REFRESCO_RELOJ = 300  # En milisegundos
 width=1020
 height=720
