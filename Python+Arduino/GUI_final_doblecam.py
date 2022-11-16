@@ -43,10 +43,17 @@ import seaborn as sb
 import sys
 
 mail="guerdex@guerdex.com"
+clave="be53409620026d7f570fe25fc2f3853d25f9eab"
 credentials={
   "type": "service_account",
   "project_id": "proyectobalanzasmart",
-
+  "private_key_id": "cbe53409620026d7f570fe25fc2f3853d25f9eab",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC4wE/wuZIo+I5p\neHWR5Kf3lwzHwClucdAQKojZUzbAwbiDeeVIDvXWKkB8b9iwy59jF6+hHdKim1VF\nTu6uhq7dWG7eqAuvgqgNzDGOBE4HPF+lO9t4vwBcXgVpGRn+jKiGfLOiYr7FJVvr\nK7x+IAj0jhIVa+Ea3SVVBoGKs8Rr356D4YZzvYTUV1vNJ9jA8p9ZfbQ8/zdjqD+v\nlDbYRzeEMB0+5smijhPAVavqPgf513R7GObKWdOB1uclO1v0H4U4XydQ36vv2K3Y\nRrXf3pOoWvqErhrr+26JpAPZAMPF5Jaq42ZfbkQL2LTs3yY3L/B/TVpBuktDqiLj\nFMTYMdpjAgMBAAECggEAPXQewyR/BSjUeinK9cn4wycX5bO6NFYgTthPJ/cBjfGC\nNh2MUkFDrcblJ18u1XQN4vDEh1O7tkH0BbdhNmVvcgoR6vc719genWRQEXzGFasT\n54r3EH18Gb1ekFx8pIrWHdIKEJhG+53XKu0j6FIwmGRPiJeXS4/G9LbSzTfJvNWW\n/3z2VaZmynejHymh/N7vlCQnJ2lIqwKBiMjMh44TuCX1GLvkqVKkIPTikYVWGakA\nfxhsX55xggqTN0U7DhR6FAT4RnmdZoQgFZpAJzecwyplNcAm+zrj21NNC12QXkLU\n2gv797QiXk9EGtMh6ToeD+czWKz8VWwUOjrkIp2QvQKBgQDin+JAiJpiaS82nMY2\nb4hXddv7mlMy7SGnq84Pjr/rRmp1h0sPhqD1ZxWIgs+OutOeBytQBcYCkicJag5Y\nMgwaRiJFvsVYehvmejluGJfunHvAI/Ttz7cPPtDuqNg6E1frGnyAoHUfWX7VZn4A\n74F8PVX40/R4/NcSislQ27GaHwKBgQDQsvCLCez2f/YJAdhgJNyUboMe0Fw+YMBg\nawqeno+mZ4YM0dZYaE07ni2eYcQ3b62rM2esbxZyuCDGmre9yxCmfDpaVCDeWPE8\nPaReKWUMcBISj2Yo01GTn8k+SzzB2zzs5NtAMn3iRtg6JcgM1/pfKpOHjJ5kki1M\nXJppTL2/PQKBgG78nnG8dN99ZAH7BZfjR4KN1g6Cpfxq5fCX03MLFjLDaZ/lgn04\nEdwdgA47AiuEk97w4+Vs7myT50pVBnFrEUJM1rwRkdSi+McHVNj2cnIJcRHIiktt\nTtnIicpYJo1Kq+QYNKFJ9BJGYjdg2pTaty+BWnliVHhsW2hZT/6pmXFBAoGASX87\nBzwvn3/g/bsQoItaw0tIEgn+8ljQZyRLUSE2Jbw/kTQ08F2LFXvXRPfZSkyiNLCd\nyjQ1C6GcqVTDcKua6YbGZhlKmgNosXZj9GVPmNm/A5pMuAPzrrGPBckpVHwJMMRI\nEou1mYKpk5DKqvtEyU8NNadoALMaENJr7rl/+WECgYANCbwACnOFF9KkrYE6kQ+p\nFD1tmfAvSp6xk7izLut83dbmxCiGiNQFfWza3J5OwrA+OBdOSctYweVZBCtUE+pi\nLpd+k2n6AckSGtcFnYLCdTrP7Vms4lqzVzZwA1rsSV9JdL2+bGvM3hhlMUL7VrXk\nzyYSpYRBtf0SxUMkhq8cdw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "proyectobalanzasmart@appspot.gserviceaccount.com",
+  "client_id": "105104323822216977545",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/proyectobalanzasmart%40appspot.gserviceaccount.com"
 }
 gc = gspread.service_account_from_dict(credentials)
