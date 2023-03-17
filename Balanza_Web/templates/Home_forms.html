@@ -1,0 +1,179 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BALANZA SMART</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- <script defer src="theme.js"></script> -->
+  <script defer src="{{ url_for('static',filename='js/theme.js')}}"></script>
+  <link rel=”preconectar” href=”https://fonts.googleapis.com”>
+  <link rel=”preconectar” href=”https://fonts.gstatic.com” crossorigin>
+  <link href=”https://fonts.googleapis.com/css2? family= Share+Tech+Mono & display=swap” rel=”stylesheet”>
+  <!-- <link rel="stylesheet" href="home.css" /> -->
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/home.css')}}">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap"
+    rel="stylesheet"
+  />
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <style>
+    button {
+      background-color: transparent;
+      border: none;
+    }
+  </style>
+</head>
+<div class="area" >
+  <ul class="circles">
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+  </ul>
+</div >
+<body> 
+<div class="centered">
+  <div class="group">
+    <div class="bar"></div>
+  </div>
+</div> 
+<div class="centered">
+  <div class="group">
+    <form name="passdata" action="." method="post">
+      <div style="display: flex; width:500px; height:100px;">
+        <input id="documento" type="text" name="ndocumento" maxLength="8" required="required">
+        <label for="name">Documento (8 Dígitos)</label>
+        <div>
+          <button  type="submit" id="enter" onclick="myFunction()">
+            <div id="enter" class="button">
+              <a id="enter">
+                <svg id="enter" width="25" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path id="enter" fill="white" d="M512 128v256c0 53.02-42.98 96-96 96h-72C330.7 480 320 469.3 320 456c0-13.26 10.75-24 24-24H416c26.4 0 48-21.6 48-48V128c0-26.4-21.6-48-48-48h-72C330.7 80 320 69.25 320 56C320 42.74 330.7 32 344 32H416C469 32 512 74.98 512 128zM367.9 273.9L215.5 407.6C209.3 413.1 201.3 416 193.3 416c-4.688 0-9.406-.9687-13.84-2.969C167.6 407.7 160 396.1 160 383.3V328H40C17.94 328 0 310.1 0 288V224c0-22.06 17.94-40 40-40H160V128.7c0-12.75 7.625-24.41 19.41-29.72C191.5 93.56 205.7 95.69 215.5 104.4l152.4 133.6C373.1 242.6 376 249.1 376 256S373.1 269.4 367.9 273.9zM315.8 256L208 161.1V232h-160v48h160v70.03L315.8 256z"/></svg>
+              </a>
+            </div>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="bloques">
+<table class="keyboard">
+<tbody>
+  <tr>
+    <td id="1">
+      <div id="1" class="button">
+        <a id="1">1</a>
+      </div>
+    </td>
+    <td id="2"><div id="2" class="button">
+      <a id="2" >2</a>
+    </div></td>
+    <td id="3"><div id="3" class="button">
+      <a id="3">3</a>
+    </div></td>
+  </tr>
+  <tr>
+    <td id="4">
+      <div id="4" class="button">
+        <a id="4">4</a>
+      </div>
+    </td>
+    <td id="5">
+      <div id="5" class="button">
+        <a id="5">5</a>
+      </div>
+    </td>
+    <td id="6">
+      <div id="6" class="button">
+        <a id="6">6</a>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td id="7"><div id="7" class="button">
+      <a id="7">7</a>
+    </div>
+  </td>
+    <td id="8">
+      <div id="8" class="button">
+        <a id="8">8</a>
+      </div>
+    </td>
+    <td id="9">
+      <div id="9" class="button">
+        <a id="9">9</a>
+      </div>
+    </td>
+  </tr>
+<tr>
+  <button id="delete">
+  <td id="delete">
+    <div id="delete" class="button">
+      <a id="delete">
+        <svg id="delete" width="28" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path id="delete" fill="white" d="M576 128c0-35.3-28.7-64-64-64H205.3c-17 0-33.3 6.7-45.3 18.7L9.4 233.4c-6 6-9.4 14.1-9.4 22.6s3.4 16.6 9.4 22.6L160 429.3c12 12 28.3 18.7 45.3 18.7H512c35.3 0 64-28.7 64-64V128zM271 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"/></svg>
+      </a>
+    </div> 
+  </td>
+</button>
+<button id="0">
+  <td id="0"> 
+    <div id="0" class="button">
+    <a id="0">0</a>
+  </div> 
+</td>
+</button>
+
+
+</tr>
+</tbody>
+</table>
+</div>
+<div class="ladizq1">
+<img width="88%" src="{{ url_for('static',filename='css/images/instrucciones.png')}}" alt="instrucciones">
+</div>
+</body>
+
+<script>
+const keyboard = document.querySelector('.keyboard');
+const input = document.querySelector("#documento");
+
+keyboard.addEventListener('click', (event) => {
+  const valor = event.target.id;
+  if (valor==='enter'){
+    var x = document.getElementById('documento').value;
+    if(x.length!=8){
+      alert("Colocar solo 8 dígitos");
+    }
+    else{
+      alert(x);
+    }
+  
+  }
+  else if(valor==='delete'){
+    // Obtener el valor actual del input
+    let inputValue = input.value;
+    // Eliminar el último carácter del valor del input utilizando substring()
+    inputValue = inputValue.substring(0, inputValue.length - 1);
+    // Establecer el valor del input con el nuevo valor
+    input.value = inputValue;
+  }
+  else{
+    input.value += valor;
+  }
+});
+function myFunction() {
+  var x = document.getElementById('documento').value;
+    if(x.length!=8){
+      alert("Colocar solo 8 dígitos");
+    }
+    else{
+      alert("Bienvenido ",x);
+    }
+}
+</script>
